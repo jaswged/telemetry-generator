@@ -1,0 +1,15 @@
+/target
+
+Cargo.lock
+
+# Data files
+*.parquet
+*.log
+
+# Ide files
+.vscode
+.idea
+
+# Os files
+.DS_Store
+Thumbs.db
