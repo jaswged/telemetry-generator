@@ -4,6 +4,7 @@ Cargo.lock
 
 # Data files
 *.parquet
+*.csv
 *.log
 
 # Ide files
