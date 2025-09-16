@@ -112,6 +112,48 @@ impl SensorEnum {
     // Todo could have concatenated with above method somehow?
     pub fn field_name(&self) -> &str {
         match self {
+            SensorEnum::Acceleration => "acc",
+            SensorEnum::Altitude => "alt",
+            // SensorType::BatteryCurrent => "BatteryCurrent_a",
+            // SensorType::BatteryTemperature => "BatteryTemperature_c",
+            // SensorType::BatteryVoltage => "BatteryVoltage_v",
+            SensorEnum::ChamberPressure => "cmb_pa",
+            SensorEnum::ChamberTemperature => "cmb_k",
+            // SensorType::CpuUsage => "CpuUsage_pct",
+            SensorEnum::FuelFlowRate => "F_f",
+            SensorEnum::FuelPressure => "F_pa",
+            SensorEnum::FuelTemperature => "F_k",
+            // SensorType::Gyroscope => "Gyroscope_x",
+            // SensorEnum::HealthStatus => "HealthStatus",
+            SensorEnum::Latitude => "Lat",
+            SensorEnum::Longitude => "Lng",
+            // SensorType::Magnetometer => "magnometer_t",
+            // SensorType::MemoryUsage => "MemoryUsage_pct",
+            // SensorEnum::MissionPhase => "MissionPhase",
+            SensorEnum::NozzleTemperature => "Nz",
+            SensorEnum::OxidizerFlowRate => "Ox_f",
+            SensorEnum::OxidizerPressure => "ox_pa",
+            SensorEnum::OxidizerTemperature => "Ox_k",
+            SensorEnum::PitchAngle => "PA",
+            SensorEnum::PitchRate => "PR",
+            // SensorType::PowerConsumption => "PowerConsumption_pct",
+            SensorEnum::RollAngle => "RA",
+            SensorEnum::RollRate => "RR",
+            SensorEnum::SpecificImpulse => "SI",
+            SensorEnum::Thrust => "Trst",
+            SensorEnum::TurboPumpRpm => "Rpm",
+            SensorEnum::Velocity => "vel",
+            SensorEnum::VibrationFreq => "Vb_hz",
+            SensorEnum::VibrationX => "VbX",
+            SensorEnum::VibrationY => "VbY",
+            SensorEnum::VibrationZ => "VbZ",
+            SensorEnum::YawAngle => "YA",
+            SensorEnum::YawRate => "YR",
+        }
+    }
+
+    pub fn field_name_full(&self) -> &str {
+        match self {
             SensorEnum::Acceleration => "acceleration_mps2",
             SensorEnum::Altitude => "altitude_m",
             // SensorType::BatteryCurrent => "BatteryCurrent_a",

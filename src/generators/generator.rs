@@ -66,7 +66,7 @@ impl TelemetryGenerator {
         let mut all_readings: Vec<TelemetryReading> = Vec::with_capacity(total_points);
         let time_step_s = 1.0 / self.config.sample_rate_hz as f64;
         info!(
-            "Time step size is: {:5.2} s or {:5.2} ms",
+            "Time step size is: {:6.4} s or {:6.4} ms",
             time_step_s,
             time_step_s / 1000.0
         );
@@ -129,7 +129,6 @@ impl TelemetryGenerator {
             "Telemetry dataset generated with {} readings",
             all_readings.len()
         );
-        info!("\n TODO TODo !!Above number may be wrong!! TODO TODo");
 
         TelemetryDataset {
             readings: all_readings,

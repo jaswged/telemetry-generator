@@ -1,5 +1,6 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
+use num_format::{Locale, ToFormattedString};
 use std::path::PathBuf;
 use std::time::Instant;
 use tracing::{Level, debug, info, warn};
@@ -15,7 +16,6 @@ use crate::generators::TelemetryGenerator;
 use crate::models::{SensorEnum, TelemetryConfig, TelemetryDataset};
 
 fn main() {
-    println!("Hello, world!");
     let cli = Cli::parse();
 
     // Setup logger
@@ -39,7 +39,6 @@ fn main() {
 
     match &cli.command {
         Commands::Generate {
-            output,
             duration,
             khz,
             launch_id,
@@ -50,7 +49,6 @@ fn main() {
         } => {
             info!("Generating telemetry data...");
             let _ = generate_to_parquet(
-                output,
                 *duration,
                 (*khz * 1000.0).round() as usize,
                 launch_id, // other run details. vehicle type, engine type, etc.
@@ -61,7 +59,6 @@ fn main() {
             );
             // Call the generate function from the generate module
             // if let Err(e) = telemetry_generator::generate::generate_telemetry(
-            //     output,
             //     *duration,
             //     *sample_rate_khz,
             //     launch_id,
@@ -116,7 +113,6 @@ fn main() {
 }
 
 fn generate_to_parquet(
-    output: &str, // &PathBuf,
     duration: usize,
     sample_rate_hz: usize,
     launch_id: &str,
@@ -129,12 +125,18 @@ fn generate_to_parquet(
     let start_time = Instant::now();
 
     info!("Number of sensors: {}", SensorEnum::number_of_sensors());
-    info!("Hz to run sim at: {}", sample_rate_hz);
+    info!(
+        "Hz to run sim at: {}",
+        sample_rate_hz.to_formatted_string(&Locale::en)
+    );
     info!("Duration of the test run: {}", duration);
 
     // Warn if sample rate is too high and would create too many rows for max_rows
     let estimated_points: usize = duration * sample_rate_hz * SensorEnum::number_of_sensors();
-    info!("Estimated number of data-points: {}", estimated_points);
+    info!(
+        "Estimated number of data-points: {}",
+        estimated_points.to_formatted_string(&Locale::en)
+    );
     if max_rows.is_some() && estimated_points > max_rows.unwrap() {
         warn!(
             "Estimated points ({}) exceed max rows ({}). Consider increasing max rows or decreasing sample rate/duration.",
@@ -160,16 +162,20 @@ fn generate_to_parquet(
     // Debug output here...
 
     // Write to Parquet
-    info!("Output file: {output}.parquet");
-    ParquetExporter::export(&dataset, output, disable_progress)?;
+    // Todo geneate output file name from params. OR concatenate onto provided name. Make it optional if not already
+    let output_file = format!("{launch_id}_{sample_rate_hz}hz_{duration}s"); //craft_file_name_parquet(config);
+    ParquetExporter::export(&dataset, &output_file)?;
 
     // Save metadata to CSV
     info!("Write out metadata around the run");
-    CsvMetadataExporter::export(&dataset, output)?;
+    CsvMetadataExporter::export(&dataset, &output_file)?;
 
     let elapsed = start_time.elapsed();
     info!("Generation completed in {:.2?}s", elapsed.as_secs_f64());
-    info!("Generated {} readings.len", dataset.readings.len());
+    info!(
+        "Generated {} readings",
+        dataset.readings.len().to_formatted_string(&Locale::en)
+    );
 
     Ok(())
 }
@@ -194,11 +200,8 @@ struct Cli {
 enum Commands {
     /// Start the server
     Generate {
-        #[arg(short, long, value_name = "FILE")]
-        output: String,
-
         // Duration of simulated flight in seconds
-        #[arg(short, long, value_name = "DURATION", default_value = "180")]
+        #[arg(short, long, value_name = "DURATION", default_value = "120")]
         duration: usize,
 
         // Frequency rate. Default is 1 kHz = 1,000 Hz

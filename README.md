@@ -10,8 +10,10 @@ Generate sample rocket telemetry data to play around with.
 
 ## To Run
 
+Example run generation at 1,000 Hz for 60 seconds. This creates a dataset with 1,620,000 rows
+
 ```bash
-cargo run -- generate --output output  --khz 1
+cargo run --release -- generate --khz 1 -d 60
 ```
 
 ### Query the Parquet
@@ -29,7 +31,8 @@ duckdb -c "select distinct(sensor_type) from read_parquet('one_hertz.parquet')"
 
 ## ToDos
 
-- [ ] Remove/reduce sensor name from exported data. Would get mapped by application. This would reduce storage space. Document how much
+- [ ] Save data to file while running to avoid hitting ram limits
+- [x] Remove ability to specify output file and instead construct from run parameters
 - [ ] Create Jupyter notebook to graph out the squiggles and see the data
 - [ ] Influx db insertions
 - [ ] Add unit tests

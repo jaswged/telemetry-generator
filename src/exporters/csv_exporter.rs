@@ -9,11 +9,11 @@ pub struct CsvMetadataExporter;
 impl CsvMetadataExporter {
     // Export telemetry meta data around run
 
-    pub fn export(dataset: &TelemetryDataset, output_path: &str) -> Result<()> {
+    pub fn export(dataset: &TelemetryDataset, output_name: &str) -> Result<()> {
         info!("Inside export csv function");
 
         // Create the file first
-        let csv_file = format!("{output_path}.metadata.csv");
+        let csv_file = format!("output/{output_name}.metadata.csv");
         info!("Writing file to: {}", csv_file);
         let mut output_file: File = File::create(&csv_file)
             .with_context(|| format!("Failed to create the file yo! {}", &csv_file))?;
@@ -38,7 +38,7 @@ impl CsvMetadataExporter {
             )?;
         }
 
-        info!("Csv file write completed");
+        info!("Csv file write completed to {}", csv_file);
         Ok(())
     }
 }

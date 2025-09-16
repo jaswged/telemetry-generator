@@ -17,11 +17,7 @@ impl ParquetExporter {
     //     ParquetExporter {}
     // }
 
-    pub fn export(
-        dataset: &TelemetryDataset,
-        file_path: &str,
-        disable_progress: bool,
-    ) -> Result<()> {
+    pub fn export(dataset: &TelemetryDataset, output_name: &str) -> Result<()> {
         info!("Inside export parquet");
 
         // Don't write anything out...
@@ -31,9 +27,9 @@ impl ParquetExporter {
         }
 
         let schema: Schema = Self::create_schema();
-
-        let output_file: File = File::create(format!("{file_path}.parquet"))
-            .with_context(|| format!("Failed to create output file at {file_path}"))?;
+        let parquet_file = format!("output/{output_name}.parquet");
+        let output_file: File = File::create(&parquet_file)
+            .with_context(|| format!("Failed to create output file at {output_name}"))?;
 
         // Create arrow writer
         let props = WriterProperties::builder()
@@ -58,7 +54,7 @@ impl ParquetExporter {
         info!(
             "Exporting {} readings to Parquet file at {}",
             batch.num_rows(),
-            file_path
+            parquet_file
         );
 
         Ok(())
