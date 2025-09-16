@@ -16,9 +16,7 @@ pub struct TelemetryConfig {
 
 impl TelemetryConfig {
     pub fn get_total_points(&self) -> usize {
-        let total_points = self.duration
-            * self.sample_rate_hz
-            * SensorEnum::number_of_sensors();
+        let total_points = self.duration * self.sample_rate_hz * SensorEnum::number_of_sensors();
 
         if let Some(max) = self.max_rows {
             std::cmp::min(total_points, max)
@@ -35,7 +33,7 @@ impl TelemetryConfig {
 impl Default for TelemetryConfig {
     fn default() -> Self {
         TelemetryConfig {
-            duration: 120, // 2 minutes
+            duration: 120,          // 2 minutes
             sample_rate_hz: 10_000, // 10 kHz
             launch_id: "eg_launch".into(),
             seed: 1337,
