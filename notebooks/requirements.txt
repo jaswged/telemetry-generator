@@ -1,0 +1,6 @@
+pandas
+polars
+plotly
+duckdb
+altair
+vl-convert-python>=1.6.0
