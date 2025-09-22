@@ -154,7 +154,7 @@ impl TelemetryGenerator {
         let mut readings: Vec<TelemetryReading> =
             Vec::with_capacity(SensorEnum::number_of_sensors());
 
-        // Pre-sample all noise values so we only borrow self.rng once
+        // Pre-sample all noise values, so we only borrow self.rng once
         let altitude_noise_val = altitude_noise.sample(&mut self.rng);
         let pressure_noise_val = pressure_noise.sample(&mut self.rng);
         let temperature_noise_val = temperature_noise.sample(&mut self.rng);
@@ -260,11 +260,11 @@ impl TelemetryGenerator {
             ),
             (
                 SensorEnum::Latitude,
-                SensorValue::Float(sim_state.latitude_deg),
+                SensorValue::Float(sim_state.latitude_deg + pitch_angle_noise),
             ),
             (
                 SensorEnum::Longitude,
-                SensorValue::Float(sim_state.longitude_deg),
+                SensorValue::Float(sim_state.longitude_deg + roll_angle_noise),
             ),
             (
                 SensorEnum::VibrationX,
@@ -569,9 +569,9 @@ impl SimulationState {
             thrust_n: 0.0,
             specific_impulse_s: 0.0,
             nozzle_temperature_k: 288.15,
-            roll_deg: 0.0,
-            pitch_deg: 0.0,
-            yaw_deg: 0.0,
+            roll_deg: 0.0001,
+            pitch_deg: 0.0001,
+            yaw_deg: 0.0001,
             roll_rate_dps: 0.0,
             pitch_rate_dps: 0.0,
             yaw_rate_dps: 0.0,
