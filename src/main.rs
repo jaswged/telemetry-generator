@@ -1,4 +1,5 @@
 use anyhow::Result;
+use chrono::Utc;
 use clap::{Parser, Subcommand};
 use num_format::{Locale, ToFormattedString};
 use std::path::PathBuf;
@@ -15,7 +16,8 @@ use crate::exporters::{CsvMetadataExporter, InfluxDBConfig, InfluxDBExporter, Pa
 use crate::generators::TelemetryGenerator;
 use crate::models::{SensorEnum, TelemetryConfig, TelemetryDataset};
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let cli = Cli::parse();
 
     // Setup logger
@@ -73,6 +75,7 @@ fn main() {
         Commands::InfluxDB {
             url,
             token,
+            org,
             bucket,
             batch_size,
         } => {
@@ -81,13 +84,21 @@ fn main() {
             info!("InfluxDB batch size {}", batch_size);
             debug!("Token: {}", token);
 
-            // let influx_exporter = InfluxDBExporter::new(InfluxDBConfig {
-            //     url, //: url.take(),
-            //     token,
-            //     org: "todo.PassInORg",
-            //     bucket,
-            //     batch_size,
-            // });
+            let influx_exporter = InfluxDBExporter::new(InfluxDBConfig {
+                url: url.clone(), //: url.take(),
+                token: token.clone(),
+                org: org.clone(),
+                bucket: bucket.clone(),
+                batch_size: *batch_size,
+            });
+
+            info!("Calling into influx generator");
+            let dataset = TelemetryDataset {
+                readings: Vec::new(),
+                config: TelemetryConfig::default(),
+                launch_time: Utc::now(),
+            };
+            let ret = influx_exporter.export(&dataset).await;
 
             // // Call the function to send data to InfluxDB
             // if let Err(e) =
@@ -230,12 +241,14 @@ enum Commands {
     InfluxDB {
         #[arg(long, default_value = "http://localhost:8086")]
         url: String,
-        #[arg(long)]
+        #[arg(short, long)]
         token: String,
+        #[arg(short, long)]
+        org: String,
         #[arg(short, long)]
         bucket: String,
         #[arg(long, default_value = "5000")]
-        batch_size: String,
+        batch_size: usize,
     },
     // Todo idea: Generate data nonstop and feed into a local InfluxDB instance
     // Use it to test out theories for data storage
